@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gussa Portal for Bebo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Cherry Bomb One', cursive;
+      background-color: #fffafc;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .page {
+      display: none;
+      padding: 60px 20px;
+      min-height: 100vh;
+    }
+    .active {
+      display: block;
+    }
+    h1, h2, h3, button, input, textarea, select {
+      font-family: 'Nunito', sans-serif;
+    }
+    .box, textarea, input[type="password"] {
+      width: 80%;
+      max-width: 500px;
+      padding: 15px;
+      margin: 20px auto;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .button {
+      background-color: #ffd1dc;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin: 10px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    }
+    .note-box {
+      background-color: rgba(255, 240, 245, 0.9);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 600px;
+      font-size: 18px;
+    }
+    .study-box {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .study-box textarea {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .checkboxes label {
+      display: block;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .corner-sticker {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 80px;
+      animation: wiggle 2s infinite ease-in-out;
+      transition: all 0.5s ease-in-out;
+      z-index: 1000;
+      cursor: pointer;
+    }
+    .corner-sticker.enlarged {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(2);
+      transition: all 2.5s ease-in-out;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+    .success-overlay {
+      background-color: rgba(255, 255, 255, 0.8);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: 24px;
+    }
+    .gif {
+      display: block;
+      margin: 20px auto 0;
+      max-width: 60%;
+    }
+
+    /* Loading hearts animation */
+    .jump {
+      font-size: 2em;
+      display: inline-block;
+      animation-name: jump;
+      animation-duration: 0.6s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+      animation-fill-mode: both;
+    }
+    .delay1 {
+      animation-delay: 0.2s;
+    }
+    .delay2 {
+      animation-delay: 0.4s;
+    }
+    @keyframes jump {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+  </style>
+</head>
+<body>
+  <audio id="click-sound" src="click.mp3"></audio>
+  <audio id="bg-music" loop autoplay muted>
+    <source src="yourmusic.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="guccha-music">
+    <source src="guccha.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="severe-music">
+    <source src="gussa.mp3" type="audio/mpeg" />
+  </audio>
+
+  <img src="cutesticker.png" alt="Sticker" class="corner-sticker" onclick="animateSticker()" />
+
+  <div class="page active" id="page1">
+    <h1>Welcome Bebo 💌</h1>
+    <input type="password" id="secret" class="box" placeholder="Enter the secret password" />
+    <br />
+    <button class="button" onclick="checkPassword()">Enter</button>
+  </div>
+
+  <div class="page" id="page2">
+    <h2>Select your current gussa level</h2>
+    <button class="button" onclick="selectMood('severe')">Severely Gussa 😡</button>
+    <button class="button" onclick="selectMood('guccha')">:( Guccha</button>
+  </div>
+
+  <div class="page" id="loading">
+    <h2>Loading something special just for you...</h2>
+    <p><span class="jump">💗</span> <span class="jump delay1">💗</span> <span class="jump delay2">💗</span></p>
+  </div>
+
+  <div class="page" id="page3">
+    <div id="noteBox" class="note-box"></div>
+    <form id="grievanceForm" action="https://formspree.io/f/xovdyern" method="POST" onsubmit="return handleFormSubmit(event)">
+      <textarea name="message" class="box" placeholder="Tell me your grievance..." required></textarea><br />
+      <select name="periods" class="box" required>
+        <option value="">Are you on your periods?</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select><br />
+
+      <!-- Study tracker is on Google Form, so no subjects here -->
+
+      <button class="button" type="submit">Submit</button>
+    </form>
+    <img id="gifImage" src="" class="gif" alt="Cute animation" />
+  </div>
+
+  <div class="page" id="page4">
+    <div class="success-overlay">
+      <img src="success.png" alt="Success" style="max-width: 90%; border-radius: 20px;" />
+      <p>Your grievance has been received 💌</p>
+    </div>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById("bg-music");
+    const gucchaMusic = document.getElementById("guccha-music");
+    const severeMusic = document.getElementById("severe-music");
+    const click = document.getElementById("click-sound");
+    const gifImage = document.getElementById("gifImage");
+
+    function animateSticker() {
+      const sticker = document.querySelector(".corner-sticker");
+      sticker.classList.add("enlarged");
+      setTimeout(() => {
+        sticker.classList.remove("enlarged");
+      }, 2500);
+    }
+
+    function checkPassword() {
+      const pwd = document.getElementById("secret").value;
+      if (pwd === "bebo1103") {
+        bgMusic.muted = false;
+        bgMusic.play();
+        showPage("page2");
+      } else {
+        alert("Wrong password!");
+      }
+    }
+
+    function selectMood(level) {
+      showPage("loading");
+      setTimeout(() => {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+
+        if (level === "severe") {
+          severeMusic.play();
+          gifImage.src = "severe.gif";
+          document.getElementById("noteBox").innerHTML = `Before gariya-ing please know that I do love you, my vocab is limited compared to yours, you're the bestest girlf one can have at this age. Tu bhot supportive h and I'm very grateful. Incase attention ni de rha toh bol dena... thank you. muah muah 💌`;
+        } else {
+          gucchaMusic.play();
+          gifImage.src = "guccha.gif";
+          document.getElementById("noteBox").innerHTML = `:( Guccha`;
+        }
+        showPage("page3");
+      }, 5000);
+    }
+
+    function showPage(id) {
+      document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      const form = document.getElementById("grievanceForm");
+
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      }).then(response => {
+        if (response.ok) {
+          showPage("page4"); // show success overlay
+
+          // Show popup only after showing success page, with small delay to ensure UI updates
+          setTimeout(() => {
+            let wantsToTrack = confirm("💖 Do you want to keep track of your study progress? 💖");
+            if (wantsToTrack) {
+              window.open("https://forms.gle/LRWNhFiwBDkNCJZX6", "_blank");
+              showPage("page1"); // After that, send user back home
+              resetAll();
+            } else {
+              showPage("page1"); // redirect home if no
+              resetAll();
+            }
+          }, 600);
+        } else {
+          alert("Oops! There was a problem submitting your grievance. Redirecting home.");
+          showPage("page1");
+          resetAll();
+        }
+      }).catch(() => {
+        alert("Network error. Redirecting home.");
+        showPage("page1");
+        resetAll();
+      });
+    }
+
+    function resetAll() {
+      // Stop all audios, reset form
+      bgMusic.pause();
+      gucchaMusic.pause();
+      severeMusic.pause();
+      gucchaMusic.currentTime = 0;
+      severeMusic.currentTime = 0;
+      document.getElementById("grievanceForm").reset();
+      document.getElementById("secret").value = "";
+    }
+  </script>
+</body>
+</html>
